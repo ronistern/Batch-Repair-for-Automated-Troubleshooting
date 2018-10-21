@@ -1,0 +1,23 @@
+\section{Optimal Batch Repair Planner}
+Following the maximum expected utility principle, we consider a decision making process for BRP as optimal if it minimizes the expected repair costs. To solve BRP optimally we model it as a stochastic shortest path Markov Decision Process (MDP). \meir{nnot all readers are well familiar with mdp and its utilized. i propose that here you say what mdp knows to solve and why we think it is compatible to our problem.}
+
+Such an MDP is defined by a tuple $\langle S,A,Tr,R,I,G \rangle$, where $S$ and $A$ are the sets of states and actions as described in the previous section. $Tr(s,a,s?)$ is the transition function, computing the probability that performing an action $a$ at state $s$ would lead to a state $s?$. $R(s,a)$ is the reward of performing an action $a$ at state $s$. $I$ is the initial states and $G$ is the set of terminal states.
+
+In our case, states and actions are as defined above: states are the observed behavior of the system and the set of components repaired so far, and an action is a repair action (applied to a set of components). The reward of performing an action is minus the cost of the corresponding repair action. The possible outcomes of an action is either that the system is repaired or it is not. The probability of each outcome is dictated by {\tt SysRepair()}. The repaired system outcome corresponds to a goal state.\meir{maybe here is the place to move the last sentence of the next para where you define the goal state.}
+
+%If the system is not repaired, then a new state is reached, according to the new observation, obtained when testing the system after performing the last repair action.
+Consider the other outcome, where the system is not repairs. In such a case, the system would be tested, resulting in a new observation. What will be this new observation depends on the true diagnosis \meir{I think you used the term "correct diagnosis", no?}. Thus, the set of diagnoses returned by the MBDE allows computing the possible new observations, and the diagnosis likelihoods gives the transition probabilities. A state is a goal state if it represents a state where the system is repaired, i.e., when the last observation is that all outputs yield their nominal output. [[Roni: not the best phrasing]]\meir{the transition function is not explained well at all. an example may help}
+
+% What is a solution
+A solution to an MDP is a policy, mapping every state to an action. In BRP, a policy maps every state reachable during the repair process to a repair action. We call such a policy a {\em repair policy}.
+
+% Optimal solver
+One can theoretically obtain an optimal repair policy by computing the optimal solution to the MDP above. This would define the best repair action for every state reached during the repair process, where best means the repair action that minimizes the expected cost. We call this approach Optimal-BRP.\meir{dont you call it \planbased\ ?}
+
+\subsection{State Space Size}
+The state space of the MDP solved by Optimal-BRP is in practice too large to be solved optimally. First, the set of possible actions in every state is in the worst case $2^{|COMPS|}$, as every subset of components may be fixed. [[Roni: footnote: can do operator decomposition to reduce branching factor at the cost of solution depth]]
+
+Second, the number of states that can be reached after applying an action is also potentially exponential in the number of system outputs. This is because when a repair action fails, the set of possible observations is potentially equal to the number of diagnoses that are not ``fixed'' by the past repair actions. The number of such diagnoses can be exponential in the number of system components, but the number of different outputs is at most exponential in the number of system outputs.
+[[Add an example of both cases. Where the $\#diagnoses < 2^{\#outputs}$ and the other way around.]]
+The state space described by our MDP is thus too large to be optimally solved in practice.
+\meir{why dont you say that the action space is also exponential $2^{|COMPS|}$}

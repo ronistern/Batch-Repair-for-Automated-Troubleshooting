@@ -1,0 +1,82 @@
+%\section{BRP as a Combinatorial Optimization Problem}
+\section{Myopic BRP}
+\planbased\ computes a complete repair policy. Next, we describe a lighter-weight myopic approach, where only the next repair action is determined. We call this approach \myopic , and describe several ways to implement it.
+\myopic\ searches the space of possible repair action, looking for the {\em best} repair action to perform next. The {\em best} repair action is defined with respect to a utility evaluation function $u(\cdot)$ that maps a repair action to a real value that estimates its merit.
+
+
+% Myopic is still hard
+Note the space of possible repair action is combinatorial, as it contains any subset of components from $\overline{Repaired}$. Thus, implementing \myopic\ requires defining $u(\cdot)$ and defining a search algorithm used to search for the best repair action.
+The effectiveness of \myopic\ depends on the search algorithm and utility function used.
+There are many existing heuristic search algorithm for searching large combinatorial search spaces~\cite{russell2010artificialIntelligence,edelkamp2011heuristic}. We therefore focus on proposing a set of possible utility functions that \myopic\ can use. Note that for some of the utility functions described next it is possible to find the best repair action without searching the entire $2^{\overline{Repaired}}$ search space.
+
+\subsection{Best Diagnosis and Lowest Cost}
+% MBDE to the rescue
+A key source of information for all the utility functions described below is the set of diagnoses $\Omega$ and their likelihoods ($p(\cdot)$). These are obtained by using an MBDE over the observations of the current state of the system. We denote by {\em Best Diagnosis} (BD) and {\em Lowest Cost} (LC) two straightforward such utility functions.
+BD returns a set of components that are assumed to be faulty in the most likely diagnosis. LC returns a set of components that are assumed faulty in a single diagnosis $\omega$ whose repair cost (cost(Repair($\omega$))) is minimal. BD and LC were proposed earlier in the context of software test planning~\cite{stern2012using,zamir2014using}. %[[Roni: I also cite our earlier DX paper, as it mentions LC while in our later paper we only mention BD. Maybe this is wrong.]]
+
+Let $u_{BD}$ and $u_{LC}$ denote the utility functions used in \myopic\ for BD and LC respectively. Both $u_{BD}$ and $u_{LC}$ assign zero to sets of components that are not in $\Omega$. For $\omega\in \Omega$, $u_{BD}=p(\omega)$ and $u_{LC}=-cost(Repair(\omega^{-}))$.
+
+%\meir{here and after when you say the heuristic is equal... it is somewhat confusing since people use to think about a heuristic as algorithm and here you refer it in terms of heuristic search as an estimation of an action cost. it should be clarified. Roni: no good idea how to do this}
+
+
+% TODO: List limitations of BD and LC, although I think it is obvious.
+
+
+\subsection{Minimizing Redundant Costs}
+BD and LC are provided as baseline heuristics. Before describing the {\em expected cost} (EC) utility function we explain the over-arching reasoning behind it.
+Repairing a system requires performing repair actions. An ideal utility function would assign zero to all repair actions except the repair action that is exactly the set of faulty components. As the set of faulty components is now known, an intelligent heuristic would cause \myopic\ to choose the repair action that minimizes the expected total repair cost.
+
+
+Some repair costs are inevitable. These are the repair overhead of a single repair action, and the component repair costs that repair the faulty components. The EC utility function estimates the expected total repair costs beyond these inevitable costs. These are the costs incurred by repairing components that are not really faulty and the costs of the future repair actions required in case the current repair action does not fix the system. We refer to the first costs as the {\em false positives cost}, denoted by $cost_{FP}$, and to latter costs as {\em false negative cost}, denoted by $cost_{FN}$\footnote{Note that the term false negative is somewhat different here than how it is used in the Machine Learning literature.}.
+
+Given $cost_{FP}$ and $cost_{FN}$ for a repair action $\gamma$ (denoted $cost_{FP}(\gamma)$ and $cost_{FN}(\gamma)$, respectively), the EC utility function, denoted $u_{EC}$, is computed as follows:
+\[ cost_{FP}(\gamma)+(1-\sysrep{\gamma})\cdot cost_{FN}(\gamma)\]
+%\meir{in the pdf it is not compiled well}
+Note that $cost_{FN}(\gamma)$ is multiplied by $1-\sysrep{\gamma}$ as the false negatives costs are only incurred if the current repair action did not repair the system. As discussed above, the probability that this occurs is $\sysrep{\gamma}$. %[[Roni: maybe last sentence is redundant]]\meir{no, it is important}
+\noindent Next, we discuss how to estimate $cost_{FP}$ and $cost_{FN}$.
+
+
+\subsubsection{False Positives Cost}
+The false positives cost can be computed by considering the {\em Component Fault Probabilities} (CFP)~\cite{stern2013findingAll}.
+%\meir{we use here cfp rather than the new name. i think it is ok since that was the name in previous work. for a space problem we can shorten significantly this subsubsection}
+%\begin{definition}[Component Fault Probability (CFP)]
+%A CFP is a mapping $CFP:COMPS\rightarrow [0,1]$ intended to estimate the
+%probability that a given component is faulty.
+%\end{definition}
+A CFP is a mapping $CFP:COMPS\rightarrow [0,1]$ that estimates the probability that a given component is faulty. 
+Given $\Omega$ and $p$, a CFP can be generated by summing for every component $C$ the diagnosis likelihoods of diagnoses that $C$ is part of. 
+%\noindent A CFP can be generated from $\Omega$ and $p$ as follows:
+%\begin{equation}
+%CFP(C)=\sum_{\omega\in\Omega}p(\omega)\cdot \mathbbm{1}_{C\in\omega}
+%\label{eq:cfd}
+%\end{equation}
+%where $\mathbbm{1}_{C\in\omega}$ is the indicator function defined as:
+%\[
+%\mathbbm{1}_{C\in\omega}=
+%\left\{
+%\begin{array}{lr}
+%	1 & C\in\omega \\
+%	0 & \text{otherwise}
+%\end{array}
+%\right.
+%\]
+This way to generate CFP from $\Omega$ and $p$ was described in previous works~\cite{zamir2014using,feldman2013model,stern2013findingAll}. It is correct under the assumption that $p(\cdot)$ assigns correct and independent probabilities to the diagnoses in $\Omega$.
+
+Given a CFP, the expected false positives cost of a repair action $\gamma$ can be computed as follows:
+\[ cost_{FP}(\gamma)=\sum_{C_i\in \gamma} (1-CFP(C_i))\cdot cost(C_i) \]
+
+%[[Roni: maybe say something about runtime ]]
+
+\subsubsection{False Negatives Cost}
+%$cost_{FN}$ requires estimating the number of future repair actions until the system is fixed. Thus, correctly estimating $cost_{FN}$ is more problematic than $cost_{FP}$, as it requires considering the future actions of the BRP solver (which is \myopic\ in this case).
+Correctly estimating $cost_{FN}$ is more problematic than $cost_{FP}$, as it requires considering the future actions of the BRP solver (which is \myopic\ in this case). 
+%\meir{here is the place to add a sentence which explains why it should consider future actions.Roni:added above, hope it is good}
+In the best case, only one additional repair action would be needed. In the worst case, there would be a single repair action for every component that was not repaired. Thus, an estimate of $cost_{FN}$ should be a value in the range $[cost_{repair},cost_{repair}\cdot |\overline{Repaired}|]$.
+%\meir{i do not remember you defined $C_{repair}$ Roni: my mistake. changed to cost_{Repair}
+One can estimate $cost_{FN}$ by choosing a random number in this range.
+
+%[[Roni: maybe add here some more thoughtful ideas on how to estimate]]
+
+
+%The key problem in estimating $cost_{FN}$ is that it depends on the future choices done by \myopic\, which in turn depends on how $cost_{FN}$ is estimated (if using $u_{EC}$). 
+To fully consider the future costs of the repair process, one needs to {\em plan} them ahead. The \planbased\ does this explicitly at the cost of incurring substantially more computational efforts.

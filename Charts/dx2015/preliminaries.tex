@@ -1,0 +1,86 @@
+\section{Preliminaries}
+Next, we provide background and definitions required for describing the BRP algorithms we propose.
+
+%\meir{up to here you gave the impression that you deal with wfm. now you suddenly talk about behaviour modes. if we want do do that we need to explicitly explain the reader. Roni: which part before assumed WFM? [TODO:Discuss]}
+
+% Behavior modes
+$SD$ describes the behavior of the diagnosed system, and in particular the behavior of each component. The term {\em behavior mode} of a component refers to a state of the component that affects its behavior. $SD$ describes for every component one or more behavior modes. For every component, at least one of the behavior modes must represent the nominal behavior of the component.
+
+% Health assignment
+%A health assignment $\omega$ is an assignment of {\em behavior modes} to components. Let $\omega^{(+)}$ be the set of components assigned a nominal (i.e., healthy) behavior mode and $\omega^{(-)}$ be the set of components assigned one of the other modes.
+A mode assignment $\omega$ is an assignment of {\em behavior modes} to components. Let $\omega^{(+)}$ be the set of components assigned a nominal (i.e., normal) behavior mode and $\omega^{(-)}$ be the set of components assigned one of the other modes.
+
+
+%\meir{i think that the word "health" here is a little bit confusing since you do not mean that all assignments are in mode health. maybe "satisfying assignment"? Roni: we used this term in the duality paper, so I assumed it is standard? anyhow, I changed to mode so I'll have the letter h for heuristic}
+
+\begin{definition}[Diagnosis]
+A mode assignment $\omega$ is called a diagnosis if $\omega \wedge OBS \wedge SD$ is satisfiable.
+\end{definition}
+
+
+%\meir{to make the last sentence more accurate i propose to add: and all its subsets are not diagnoses.}
+%Note that the notion of kernel diagnosis is only relevant in strong fault models (SFM) as oppose to weak fault model (WFM). \meir{you can say that in wfm kernel=minimal, while in sfm kernel is subset of minimal. Roni: done later int he apepr}
+%Using MBD to Solve BRP \meir{???}
+
+
+% *** Define a diagnosis engine and what it returns ***
+A model-based diagnosis engine (MBDE) accepts as input $SD$, $OBS$, and $COMPS$ and outputs a set of diagnoses $\Omega$. Although a diagnosis is consistent with $SD$ and $OBS$, it may be incorrect. A diagnosis is {\em correct} if the assigned modes to all components match their true states. Some diagnosis algorithms return, in addition to $\Omega$, a measure of the likelihood that each diagnosis is {\em correct}~\cite{williams2007conflict,abreu2011simultaneousDebugging}. Let $p: \Omega \rightarrow [0,1]$ denote this likelihood measure. We assume that $p(\omega)$ is normalized so that $\sum_{\omega\in\Omega} p(\omega)=1$ and use it to approximate the probability that $\omega$ is correct.
+
+
+% Light at the end of the tunnle
+A common way to estimate the likelihood of diagnoses, assumes that each component has a prior on the likelihood that it would fail and component failures are independent. Therefore, if $p(C_i)$ represents the likelihood that a component $C_i$ would fail then diagnosis likelihood can be computed as
+\begin{equation}
+\displaystyle p(\omega)=\frac{\prod_{C\in\omega^{-}} p(C)}{\sum_{\omega'\in\Omega}{\prod_{C\in\omega'^{-}} p(C)}}
+\label{eq:likelihoods}
+\end{equation}
+where the denominator is a normalizing factor. %If diagnoses likelihoods are computed according to Equation~\ref{eq:likelihoods}, then they can be computed ``online'' and there is no need to represent them explicitly.  %\meir{i dont know what you mean here online.} [[Roni:  not sure about the English of the last sentence]] [[Roni: removed the unclear part]]
+We assume in the rest of this paper that diagnoses likelihoods are computed according to Equation~\ref{eq:likelihoods}.
+
+
+%\meir{[why not saying specifically "the probability that diagnosis $\omega$ is correct] Roni: I may be over-analyzing here, but the term probability makes some pedants nervous, so I rather have the weaker notion of likelihood and say it approxiamtes probabilities}
+
+% *** Explain what is the sytem repair likelihood ***
+\subsection{System Repair Likelihood}
+If the MBDE returns a single diagnosis $\omega$ that is guaranteed to be correct, then the optimal solution to BRP would be to perform a single repair action: Repair($\omega^{-})$. %to repair exactly the components in $\omega$.
+This, however, is rarely the case, and more often a possibly very large set of diagnoses is returned by diagnosis algorithms. This introduces uncertainty as to whether a repair action would actually fix the system. We define this uncertainty as follows:
+
+\begin{definition}[System Repair Likelihood]
+The System Repair Likelihood of a set of components $COMPS'\subseteq COMPS$, denoted \sysrep{COMPS'}, is the probability that Repair(COMPS') would fix the system.
+\end{definition}
+
+
+MEIR: i'm not sure that the next discussion is such necessity, but i think we should a definition to health state.
+% Diagnosis likelihood != system repair likelihood. Computing system repair likelihood from the diagnoses likelihoods
+Consider the relation between $p(\omega)$ and \sysrep{$\omega$}. If $\omega$ is correct, then repairing all components that are faulty according to $\omega$ ($\omega^{-}$) would fix the system. Therefore, the likelihood of repairing $\omega^{-}$ causing the system to be fixed is at least $p(\omega)$, i.e.,
+\[ \sysrep{\omega^{-}}\geq p(\omega)  \]
+%\meir{why? you can conclude maximum equal. Roni: From the above, we can only conclude that \sysrep\ is at least as large as p(). Below we show that it can be more. Added clarifying text }
+Moreover, if $\omega$ is correct then repairing any superset of $\omega^{-}$ would also fix the system. Thus, $\sysrep{\omega^{-}}$ may be larger than $p(\omega)$.
+On the other hand, repairing any set of components that is not a superset of $\omega^{-}$, as there would still be faulty components in the system.
+Therefore, a repair action Repair($COMPS'$) would fix the system if and only if $\omega^{*^{-}}\subseteq COMPS'$, where $\omega^*$ is the correct diagnosis.
+While we do not know $\omega^*$, we can compute \sysrep{COMPS'} from $\Omega$ and $p(\cdot)$:
+\[ \sysrep{C} = \sum_{\omega\in \Omega \wedge \omega\subseteq C} p(\omega) \]
+%\meir{although i understand what you mean you must justify this. an example may be help}
+For example, in the logical circuit depicted in Figure~\ref{fig:simple-example}, there are two diagnoses, $\{A\}$ and $\{B\}$, such that $p(\{A\})=0.6$ and $p(\{B\})=0.4$. Thus, $\sysrep{\{A\}}$=0.6, $\sysrep{\{B\}}$=0.4, and $\sysrep{\{A,B\}}$=$p(\{A\})$+$p(\{B\})$=1.
+
+
+MEIR: we dont need the next subsection
+\subsection{System State During Repair}
+Fixing a system involves potentially many repair actions. We use the term {\em repair process} to refer to the process of applying these sets of repair actions until the system is fixed. During the repair process, two sets are maintained.
+\begin{itemize}
+	\item $Repaired$ -- the set of components already repaired.
+	\item $Observed$ -- the set of observations, including $OBS$ as well as all the additional observations obtained after performing a repair action.
+\end{itemize}
+%\meir{i think you should explain first why do you define state and what is the verbal meaning of state.} The {\em state} of a system during the repair process consists of
+We use the term {\em system state} to refer to the values of $Repaired$ and $Observed$ at a given point in time during the repair process. For a given system state, we denote by $\overline{Repaired}$ as the set of components that were not repaired yet, i.e., $\overline{Repaired}=COMPS\setminus Repaired$.
+Following standard mathematical notation, we denote by $2^{\overline{Repaired}}$ as the power set of $\overline{Repaired}$. 
+%set consisting of $\overline{Repaired}$ and any of its subsets.
+As there is no need to repair a component twice to fix the system, only repair actions that repair a set of components that is a member of $2^{\overline{Repaired}}$ should be considered.
+
+
+
+
+% Two components: diagnosis and planner
+%In this paper we propose to combine planning and model-based diagnosis algorithms to provide an algorithmic framework for solving BRP. This framework, inspired by Livingstone~\cite{williams1996model}, uses two modules. A diagnosis engine (DE) and a repair planner (RP).  The task of the DE is to return a set of candidate diagnoses, each assigned with the probability that it is correct. The task of the RP is to choose which subset of components to repair. A planner is required for this task, so as to choose the subset of components while considering possible future repair actions. Next, we describe such a planner that is optimal under certain conditions.
+
+% Defining the state space of the planner
+%For choosing which repair actions to preform, we define a state-space planner. States are the subset of components fixed so far, and the outcome of the previously performed tests. Actions are the repair actions. A goal state is a state where, according to the outcome of the past tests the system is now repaired.

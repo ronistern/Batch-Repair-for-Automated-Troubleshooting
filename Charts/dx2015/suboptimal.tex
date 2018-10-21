@@ -1,0 +1,51 @@
+\section{Diagnoses and Possible Repair Actions}
+In both \myopic\ and \planbased\ algorithms, the possible repair actions considered at a system state is to be $2^{\overline{Repaired}}$. This indeed covers all relevant repair actions, but results in a high computationally complexity. For \myopic\ this is the size of the search space and in \planbased\ this is the branching factor of the corresponding MDP state space.
+Thus, one way to speedup \myopic\ and \planbased\ is to relax the requirement to consider all $2^{\overline{Repaired}}$ repair actions. This can result in faster runtime at the potential cost of finding solutions of lower quality.
+
+\subsection{Helpful Repair Actions}
+% Can be optimal even if only considering just the components in the diagnoes
+The first relaxation we propose is called {\em Helpful Repair Actions} (HRA). It is a straightforward relaxation that still results in \planbased\ outputting an optimal repair policy if $\Omega$ contains all diagnoses.
+%\meir{must we assume p is correct? dont we assume this along all the paper? if we assume this then such a comment makes the reader some confused, since it will look for the implications of such an assumption.}{Roni: you're right, we dont need this assumption. Fixed it}
+In such a case, components that are not part of any diagnoses cannot be faulty. Thus, instead of considering to repair every component in $\overline{Repaired}$, a BRP solver can consider to repair only components that are part of at least one diagnosis. The set of such components is denoted by $\overline{Repaired}[\Omega]$. Formally,
+\[ \overline{Repaired}[\Omega]=\{C|C\in \overline{Repaired}\ \wedge \exists \omega\in \Omega\ \text{s.t.}\ C\in\omega \}\]
+
+% Even if not optimal, it's stil reasonable
+Restricting the applicable repair actions to return only subsets of $\overline{Repaired}[\Omega]$ is also reasonable when $\Omega$ does not return all diagnoses, under the assumption that the diagnoses found in $\Omega$ are more informed than random guesses. In such cases, however, \planbased\ cannot guarantee to find the optimal repair plan.
+
+
+% Consider only supersets of diagnoses
+\subsection{Must Fix Repair Actions}
+The {\em Must Fix Repair Actions} (MFRA) relaxation further restricts the set of repair actions to only those that may immediately fix the system. If $\Omega$ contains all diagnoses, then to fix the system a repair action must repair at least all the components of one of the diagnoses in $\Omega$. Thus, the set of repair actions considered by MFRA is all the subsets of $\overline{Repaired}[\Omega]$ such that there exists a diagnosis in $\Omega$ whose faulty components are repaired. This set is denoted by $MFRA[\Omega]$. $MFRA[\Omega]$ is defined below more formally.
+\[ MFRA[\Omega]=\{ \gamma | \gamma\subseteq \overline{Repaired}[\Omega] \wedge \exists \omega\in\Omega \text{ s.t. } \omega^{-}\in\gamma\}\]
+The motivation behind MFRA is to reduce future repair overheads -- avoiding repair actions that we know would not fix the system.
+
+% When to use
+MFRA would be suitable especially to cases where the repair overhead is much more costly than the component repair costs ($cost_{repair}>>cost_{C_i}$).
+If the component repair costs are not substantially less than the repair overhead, then MFRA may not be a good solution, as it might be useful to perform a repair action just to obtain another observation, resulting in a more accurate diagnoses that may save component repair costs.
+
+
+
+\subsection{Relaxing the MBDE}
+% MBDE was assumed to return all diagnoses % Returning all diagnosis is hard, there may be many of those
+All the algorithms, heuristics and relaxations, so far assumed, either implicitly or explicitly, that $\Omega$ contains all diagnoses. This is especially important to the correctness of how the transition function in the \planbased\ MDP was defined, and the MFRA relaxation presented above. Finding all diagnoses, however, is a very hard task computationally~\cite{Selman90}. Moreover, considering all diagnoses as possible repair actions is likely to be too computationally expensive for \myopic\ and \planbased . As an alternative, diagnosis algorithms such as Sherlock~\cite{deKleer1989diagnosis} and CDA*~\cite{williams2007conflict} return the most likely diagnoses. Under some assumptions, these are the diagnoses with the smallest number of abnormal components (also known as the minimal cardinality diagnoses), and much work has been done on finding such diagnoses~\cite{metodi2012compiling,stern2012exploring,de2011hitting,de1987diagnosing}.
+
+
+% Minimal cardinality and all kernels
+%Others return the diagnoses with the smallest number of abnormal components (also known as the minimal cardinality diagnoses), which under some assumptions translate to the most likely diagnoses~\cite{metodi2012compiling,stern2012exploring,de2011hitting,de1987diagnosing}. Another option is to return all kernel diagnoses, which according to Equation~\ref{eq:likelihoods} are more likely than the diagnoses they cover. Note that in weak fault models, which is where the system description ($SD$) only contains the nominal behavior of the components, kernel diagnoses are in fact {\em subset minimal diagnoses}. A diagnosis $\omega$ is subset minimal if there is no diagnosis $\omega'$ such that $\omega'^{-}\subset\omega^{-}$. Searching for subset minimal diagnoses in weak fault models is a well-studied problem in the model-based diagnosis literature~\cite{de1987diagnosing}.
+
+
+% SAFARI
+%The set of kernel diagnoses can, however, be very large and finding kernel diagnoses is computationally hard~\cite{deKleer1990characterizing}. More generally, finding the most likely diagnoses may not be feasible in reasonable time. Thus, approximate diagnosis algorithms may be required. For example, the SAFARI algorithm performs a local search until a diagnosis is found, and then tries to minimize it stochastically~\cite{feldman2010approximate}.\meir{as you know it is only for WFM. but you have already mentioned CDA* which computes only the most probable diagnoses.s}
+
+% Why most likely is not a horrible choice
+Implementing MBDE so as to not return all diagnoses, e.g., using one of the algorithms specified above, may affect the performance of \myopic\ and \planbased\ .
+Below, we give a partial list of the effects of having $\Omega$ not contains all diagnoses.\\
+%\begin{itemize}
+	\noindent {\bf Partial repair actions.} Both HRA or MFRA limit the set of repair actions applicable according to a given set of diagnoses. If, for example, a faulty component $C_i$ does not occur in any diagnosis, then repairing it would not be a repair action considered by either \myopic\ or \planbased\footnote{Note that if MBDE is guaranteed to always find at least one diagnoses until the system is fixed, then \myopic\ and \planbased\ would also eventually fix the system.}.\\
+	\noindent {\bf Inaccurate diagnoses likelihoods.} The diagnoses likelihoods computed according to Equation~\ref{eq:likelihoods}, where the denominator normalizes the diagnosis likelihood of a single diagnosis with that of all the diagnoses. With a limited set of diagnoses, the likelihoods computed by Equation~\ref{eq:likelihoods} would be higher than their true value. This would affect the accuracy of {\tt SystemRepair}, CFP and the MDP transition function.	
+%\end{itemize}
+%The impact of not returning the set of all diagnoses depends on the likelihood of the diagnoses that are returned. Let $\Omega_b$ denote the set of diagnoses returned by an MBDE, and let $\Omega^*$ denote the set of all diagnoses. Returning $\Omega_b$ instead of $\Omega^*$ has two affects. First, the set of repair actions may be limited, if either HRA or MFRA are used. Second, the diagnoses likelihoods become less accurate, as the denominator of Equation~\ref{eq:likelihoods} would not be based on $\Omega^*$. The accuracy of the diagnoses likelihoods affects the accuracy of \sysrep , the CFP, and the transition function of \planbased .
+%\meir{for space limitation we can delete the next.}
+%The negative effects of not returning all the diagnoses are controlled by the probability mass of the likelihoods of the returned diagnoses. Intuitively, if the most likely diagnoses are substantially more likely than the less likely diagnoses, then the missed repair action would probably not be repair actions worth executing and the inaccuracies in the computed diagnoses likelihoods would be potentially smaller. Studying the exact impact is left for future work.
+
+%\meir{the subsubsection is too long and mess. the last para is really the most important and we need only one para beforehand that says that there are alternatives to finding all diagnoses such as SHERLOCK \cite{deKleer1992} and CDA*.} [[Roni: repharased]]

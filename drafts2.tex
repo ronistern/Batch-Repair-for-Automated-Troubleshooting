@@ -1,0 +1,303 @@
+In contrast, the cost of of a in a standard pathfinding problem may only increase
+Such search spaces 
+Therefore, the wasted 
+In other words, for every sets of components $\gamma' \subset \gamma$
+it holds that $cost_{FN}(\gamma')\leq cost_{FN}(\gamma)$ 
+and $cost_{FP}(\gamma')\geq cost_{FP}(\gamma)$. Since the wasted cost function is influenced both by $cost_{FP}$ and $cost_{FN}$, the wasted cost may increase or decrease. 
+Having a non-monotonic search space affects the behavior of standard search algorithms~\cite{stern2014max}, as will be discussed below. 
+
+With either search space formulation (powerset or union), a state $s'$ is a descendant of state $s$ 
+if $s.\gamma\subset s'.\gamma$. However, a superset of a repair action could easily be a better choice for a repair action, and could have a lower expected wasted cost. 
+For example, consider the case where the set of components $\gamma' \subset \omega$ is a partial diagnosis, and its superset $\gamma$ contains all the components of a diagnosis $\omega \subseteq \gamma$. Repairing a partial diagnosis would require more repair actions, as the system would not be fixed for sure, while a repair action that contains all of the components of a diagnosis could be resulted with a fixed system.
+
+
+
+Several standard search algorithms assume that the \emph{cost} of a state $s$ is 
+never larger than the cost of any of its descendants. A search space obeying this rule is called a \emph{monotonic search space}~\cite{stern2014max}. 
+In \brpswc{}, however, a state $s$ represents a set of components $s.\gamma$ 
+and its cost is the expected wasted cost $C_{WC}(s.\gamma)$. With either search space formulation (powerset or union), a state $s'$ is a descendant of state $s$ 
+if $s.\gamma\subset s'.\gamma$. However, a superset of a repair action could easily be a better choice for a repair action, and could have a lower expected wasted cost. 
+For example, consider the case where the set of components $\gamma' \subset \omega$ is a partial diagnosis, and its superset $\gamma$ contains all the components of a diagnosis $\omega \subseteq \gamma$. Repairing a partial diagnosis would require more repair actions, as the system would not be fixed for sure, while a repair action that contains all of the components of a diagnosis could be resulted with a fixed system.
+
+
+
+, it represents a batch repair action in which more components are repaired. Let 
+It is clear that the search space of BRP is not monotonic, as a superset of a repair action could easily be a better choice for a repair action. 
+
+
+
+if a state $s'$ is a descendant of a state $s$ 
+then $s'$ 
+a state $s$ represents a batch repair action that includes repairing a set of components that is
+a subset of the set of components repaired by a 
+
+
+Usually this type of minimum-search problems has a monotonic search space, meaning there is no path that is better then any of its prefixes. In BRP monotonicity of the search space means that there is no set of components $\gamma$ which could be a better repair action then any of the set of components $\gamma'$ such that ${\gamma}' \subset \gamma$. It is clear that the search space of BRP is not monotonic, as a superset of a repair action could easily be a better choice for a repair action. An easy example is to consider the case where the set of components $\gamma' \subset \omega$ is a partial diagnosis, and its superset $\gamma$ contains all the components of a diagnosis $\omega \subseteq \gamma$. Repairing a partial diagnosis would require more repair actions, as the system would not be fixed for sure, while a repair action that contains all of the components of a diagnosis could be resulted with a fixed system.
+
+
+
+the cost function -- the expected wasted cost -- is not \emph{monotonic}~\cite{stern2014max}. 
+A cost function for a search problem is not \emph{monotonic} if the cost along a path in the search space may decrease, 
+i.e., there exists two states $s$ and $s'$ such that $s'$ is a descendant of $s$ 
+and according to the cost function the cost of $s'$ is smaller (i.e., better) than the cost of $s$~\cite{stern2014max}. 
+Key assumptions made explicitly or implicitly in standard search algorithms do not hold in non-monotonic
+
+
+To explain this, observe that it in several minimimum-costs often assumed by search algorithms that the minimum-search problems has a monotonic search space, meaning there is no path that is better then any of its prefixes. In BRP monotonicity of the search space means that there is no set of components $\gamma$ which could be a better repair action then any of the set of components $\gamma'$ such that ${\gamma}' \subset \gamma$. 
+
+standard search algorithms such as A{^*]consider first 
+
+
+In \brps{}, the task in \brps{} is to find a state that represents a repair action with minimal expected wasted cost, 
+
+
+%moved next para from search space section: --------
+\brpswc{} is a challenging search problem due to the size of its search space (see Section~\ref{sec:search-space properties}), 
+but also because the cost function -- the expected wasted cost -- is not \emph{monotonic}. 
+
+
+
+
+
+
+
+In \brps{}, the task in \brps{} is to find a state that represents a repair action with minimal expected wasted cost, 
+and if $s'$ is a descendant of $s$ then it means 
+the batch repair action represented by $s'$ 
+includes repairing all the components planned to be repaired by the batch repair action represented by $s$. 
+
+$s'$ represents a batch repair action in which a superset of 
+the components 
+and so the cost function 
+
+
+Usually this type of minimum-search problems has a monotonic search space, meaning there is no path that is better then any of its prefixes. In BRP monotonicity of the search space means that there is no set of components $\gamma$ which could be a better repair action then any of the set of components $\gamma'$ such that ${\gamma}' \subset \gamma$. It is clear that the search space of BRP is not monotonic, as a superset of a repair action could easily be a better choice for a repair action. An easy example is to consider the case where the set of components $\gamma' \subset \omega$ is a partial diagnosis, and its superset $\gamma$ contains all the components of a diagnosis $\omega \subseteq \gamma$. Repairing a partial diagnosis would require more repair actions, as the system would not be fixed for sure, while a repair action that contains all of the components of a diagnosis could be resulted with a fixed system.
+
+Another way to clarify this point is to consider how the wasted cost changes along a path in the search space. 
+Going along a path in the search space means considering larger sets of components to be repaired in a single batch repair action. This results in higher false positive costs, but also in lower false negative costs.
+In other words, for every sets of components $\gamma' \subset \gamma$
+it holds that $cost_{FN}(\gamma')\leq cost_{FN}(\gamma)$ 
+and $cost_{FP}(\gamma')\geq cost_{FP}(\gamma)$. Since the wasted cost function is influenced both by $cost_{FP}$ and $cost_{FN}$, the wasted cost may increase or decrease. 
+Having a non-monotonic search space affects the behavior of standard search algorithms~\cite{stern2014max}, as will be discussed below. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% In a monotonic search space, breadth-first search (and uniform-cost search in domains with non-unit edge costs)  is guaranteed to find an optimal solution when a goal node is found. However, when the search space in non-monotonic an uninformed search like BFS guarantees an optimal solution only once all nodes in the search space have been explored. [[Roni: it's a bit more complex, since if edges have different costs, as is the case in our problem, then BFS is not guaranteed to return optimal soultions, only uniform cost search ]] Therefore, to make the runtime manageable we limit the depth of the BFS, where the depth limit $k$ is a parameter.  Thus, the search will explore the first $k$ levels of the search space, and return the batch repair set of components that has the highest wasted cost utility. 
+
+\subsubsection{Heuristic Search} %todo - edit text in this section
+%add text?
+
+\subsubsection*{Local Search}
+
+
+
+
+
+
+
+
+
+\brpswc{} is a challenging search problem due to the size of its search space (see Section~\ref{sec:search-space properties}), 
+but also because of how its search space and the expected wasted cost function are defined. 
+In \brpswc{}, a state $s$ represents a set of components $s.\gamma$ 
+and its cost is the expected wasted cost $C_{WC}(s.\gamma)$. 
+Consider how the wasted cost changes along a path in the search space. 
+Going along a path in the search space means considering larger sets of components to be repaired in a single batch repair action. 
+This results in higher false positive costs, but also in lower false negative costs. 
+Formally, if a state $s'$ comes after a state $s$ in some path in the BRP search space, 
+then $s.\gamma\subseteq s'.\gamma$, and consquently 
+$cost_{FN}(s.\gamma)\leq cost_{FN}(s'.\gamma)$ 
+and $cost_{FP}(s.\gamma)\geq cost_{FP}(s'.\gamma)$. 
+Since the wasted cost function is influenced both by $cost_{FP}$ and $cost_{FN}$, 
+it means that the wasted cost may either increase or decrease along a path in the search space. 
+A search space with this property is called \emph{non-monotonic}. 
+Having a non-monotonic search space affects the behavior of standard search algorithms~\cite{stern2014max}, as will be discussed below. 
+We acknowledge that Hill Climbing is a very simple local search search algorithm, and there are many other, more sophisticated, local search algorithms~\cite{lourencco2003iterated} that can be used.  Techniques such as random restarts, simulated annealing, Tabu search~\cite{glover2013tabu}, and others have been shown to be very effective in many domains. However, non of these techniques can guarantee that the found repair action is indeed optimal. Next, we propose optimal search algorithms, that can provide such guarantees. 
+
+%In addition, there are more sophisticated optimal heuristic search algorithm including Enhanced Partial Expansion A*~\cite{goldenberg2014enanced}, IDA*~\cite{korf1985depth}, and RBFS~\cite{korf1993linear}, as well as a variety of bounded suboptimal search algorithms. However, the goal of this work is not to perform a comprehensive comparison of different search paradigms, but to demonstrate their potential use in solving BRP.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Finding an optimal solution by with a brute-force search algorithm is not feasible due to its size (see Section~\ref{sec:search-space properties}). Thus, a heuristic search algorithm is needed. 
+\astar{}~\cite{hart1968formal} is one of the most well-known heuristic search  algorithm that can guarantee that an optimal solution is found. \astar{} implements a best-first search algorithmic framework. It maintains a list of open nodes (denoted OPEN), initialized by the root of the search tree. 
+In every iteration it pops from OPEN the node $n$ with the lowest $f(n)=g(n)+h(n)$ value, 
+where $g(n)$ is the cost spent so far for node $n$, and $h(n)$ is an admissible heuristic function, that is, it is a lower bound of the lowest-cost path from $n$ to a goal. Then, $n$ is {\em expanded}, which means that all its children (the nodes created by applying a single state-transition operator on $n$) are {\em generated} and inserted to OPEN.
+Under certain conditions, an optimal solution is guaranteed once \astar{} expands a goal state. 
+
+
+Unfortunately, some of these conditions do not hold. In particular, the 
+
+iIf the heuristic $h(n)$ is \emph{admissible}, which means it is a lower bound to the lowest cost path from $n$ to a goal, and the search space is monot
+
+
+
+
+
+Since $cost(n)$  
+may increase or decrease along a path in the search space, it means that the search space is not monotone
+
+
+Unlike 
+the relation between $cost(n)$ and $L(n)$, and $g(n)$ and $h(n)$. 
+Proving that this \astar{} is equivalent to the traditional \astar{} definition that uses $g(n)$ and $h(n)$ is trivial, 
+as it is easy to convert between $g(n)$ and $h(n)$, and $cost(n)$ and $L(n)$: 
+$g(n)=cost(n)$ and $h(n)=L(n)-g(n)$. 
+However, it is more convenient to discuss costs and heuristics in state-based problems as \brpswc{} in terms of costs and heuristics over states, instead of paths.
+
+
+
+
+
+If the heuristic $h(n)$ is \emph{admissible}, which means it is a lower bound to the lowest cost path from $n$ to a goal, and the search space is monotone, then an optimal solution is guaranteed once \astar{} expands the goal. However, to find optimal solutions with \astar{} in non-monotonic search space one needs to keep track of (1) the best solution it has found so far, referred to as the \emph{incumbent solution}, (2) its cost, denoted by $C_{inc}$, and (3) the lowest $f(n)$ value in OPEN, denoted by $f_{min}$. 
+%\footnote{Note that as the search progresses, the list of nodes in OPEN changes, and thus the lowest $f(n)$ value in OPEN may increase or decrease with the search. However, it is always a lower bound on the optimal solution, and therefore we denote by $f_{min}$ the highest of these values seen so far, to have the tightest lower bound observed so far.}
+As the search progresses, $C_{inc}$ and $f_{min}$ change: better incumbent solutions are found, lowering the value of $C_{inc}$, 
+and $f_{min}$ may increase or decrease, depending the nodes in OPEN.\footnote{Note that $f_{min}$ may increase only in domains with an inconsistent heuristic.} However, it is always a lower bound on the optimal solution, and thus we keep track also of the highest $f_{min}$ value seen so far, denoted by $f_{maxmin}$. When OPEN is empty or when $C_{inc}\leq f_{maxmin}$, the search can halt and the incumbent solution is guaranteed to be optimal~\cite{stern2014max}. 
+
+
+
+
+
+
+
+
+
+We say that $L(n)$ is admissible if is a lower bound on the value it estimates: \begin{equation}
+ L(n)\leq \min \{cost(n')| n.\gamma \subseteq n'.\gamma\}  \label{eq:admissibility}
+\end{equation}
+The relation between $cost(n)$, $L(n)$, $g(n)$ and $h(n)$ is as follows:
+$cost(n)=g(n)$ and $L(n)=f(n)=g(n)+h(n)$. 
+
+Proving that this \astar{} is equivalent to the traditional \astar{} definition that uses $g(n)$ and $h(n)$ is trivial, 
+as it is easy to convert between $g(n)$ and $h(n)$, and $cost(n)$ and $L(n)$: 
+$g(n)=cost(n)$ and $h(n)=L(n)-g(n)$. 
+
+
+$cost(n)$ and $L(n)$, which are defined next. $cost(n)$ corresponds to the expected wasted costs of $n.\gamma$, i.e., $C_{WC}(n.\gamma)$. $L(n)$ is a heuristic function that estimates the cost of the lowest cost node in the subtree of the \brpswc{} search space rooted at $n$ (including $n$). We say that $L(n)$ is admissible if is a lower bound on the value it estimates: \begin{equation}
+ L(n)\leq \min \{cost(n')| n.\gamma \subseteq n'.\gamma\}  \label{eq:admissibility}
+\end{equation}
+
+
+
+
+
+
+
+
+
+In \brpswc{}, a state $s$ represents a set of components $s.\gamma$ and its cost is the expected wasted cost $C_{WC}(s.\gamma)$. Consider how the wasted cost changes along a path in the search space. Going along a path in the search space means considering larger sets of components to be repaired in a single batch repair action. This results in higher false positive costs, but also in lower false negative costs. Formally, if a state $s'$ comes after a state $s$ in some path in the BRP search space, 
+then $s.\gamma\subseteq s'.\gamma$, and consquently 
+$cost_{FN}(s.\gamma)\leq cost_{FN}(s'.\gamma)$ 
+and $cost_{FP}(s.\gamma)\geq cost_{FP}(s'.\gamma)$. 
+Since the wasted cost function is influenced both by $cost_{FP}$ and $cost_{FN}$, it means that the wasted cost may either increase or decrease along a path in the search space. A search space with this property is called \emph{non-monotonic}. Having a non-monotonic search space affects the behavior of standard optimal search algorithms~\cite{stern2014max}, as will be discussed below. 
+
+
+
+there is no real notion of a \emph{path} in the \brpswc{} search space, since every state in the \brpswc{} search space represents a possible batch repair action. Thus, in \brpswc{} a \emph{state} has a cost -- its expected wasted costs $C_{WC}$ -- but there is not clear definition of the cost of a path in this search space.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Finding an optimal solution to \brpswc{} is a challenging search problem due to the size of its search space (see Section~\ref{sec:search-space properties}), but also because of how its search space and the expected wasted cost function are defined. 
+
+In \brpswc{}, a state $s$ represents a set of components $s.\gamma$ and its cost is the expected wasted cost $C_{WC}(s.\gamma)$. Consider how the wasted cost changes along a path in the search space. Going along a path in the search space means considering larger sets of components to be repaired in a single batch repair action. This results in higher false positive costs, but also in lower false negative costs. Formally, if a state $s'$ comes after a state $s$ in some path in the BRP search space, 
+then $s.\gamma\subseteq s'.\gamma$, and consquently 
+$cost_{FN}(s.\gamma)\leq cost_{FN}(s'.\gamma)$ 
+and $cost_{FP}(s.\gamma)\geq cost_{FP}(s'.\gamma)$. 
+Since the wasted cost function is influenced both by $cost_{FP}$ and $cost_{FN}$, it means that the wasted cost may either increase or decrease along a path in the search space. A search space with this property is called \emph{non-monotonic}. Having a non-monotonic search space affects the behavior of standard optimal search algorithms~\cite{stern2014max}, as will be discussed below. 
+
+
+One of the most well-known optimal search algorithms is \astar{}~\cite{hart1968formal}. \astar{} implements a best-first search algorithmic framework. It maintains a list of open nodes (denoted OPEN), initialized by the root of the search tree. 
+In every iteration it pops from OPEN the node $n$ with the lowest $f(n)=g(n)+h(n)$ value, 
+where $g(n)$ is the cost spent so far for node $n$, and $h(n)$ is an estimate of the lowest cost path from $n$ to a goal. Then, $n$ is {\em expanded}, which means that all its children (the nodes created by applying a single state-transition operator on $n$) are {\em generated} and inserted to OPEN.
+
+
+If the heuristic $h(n)$ is \emph{admissible}, which means it is a lower bound to the lowest cost path from $n$ to a goal, and the search space is monotone, then an optimal solution is guaranteed once \astar{} expands the goal. However, to find optimal solutions with \astar{} in non-monotonic search space one needs to keep track of (1) the best solution it has found so far, referred to as the \emph{incumbent solution}, (2) its cost, denoted by $C_{inc}$, and (3) the lowest $f(n)$ value in OPEN, denoted by $f_{min}$. 
+%\footnote{Note that as the search progresses, the list of nodes in OPEN changes, and thus the lowest $f(n)$ value in OPEN may increase or decrease with the search. However, it is always a lower bound on the optimal solution, and therefore we denote by $f_{min}$ the highest of these values seen so far, to have the tightest lower bound observed so far.}
+As the search progresses, $C_{inc}$ and $f_{min}$ change: better incumbent solutions are found, lowering the value of $C_{inc}$, 
+and $f_{min}$ may increase or decrease, depending the nodes in OPEN.\footnote{Note that $f_{min}$ may increase only in domains with an inconsistent heuristic.} However, it is always a lower bound on the optimal solution, and thus we keep track also of the highest $f_{min}$ value seen so far, denoted by $f_{maxmin}$. When OPEN is empty or when $C_{inc}\leq f_{maxmin}$, the search can halt and the incumbent solution is guaranteed to be optimal~\cite{stern2014max}. 
+
+%To guarantee optimality, the search can only halt when either OPEN is empty or when $C_{inc}\leq f_{min}$. 
+
+To apply \astar{} for solving the \brpswc{} problem, one needs to define $g(n)$ and $h(n)$: the cost of the \emph{path} from start to $n$ and an estimate of the cost of the \emph{path} from $n$ to a goal. However, in \brpswc{} there is no real notion of a \emph{path} in the \brpswc{} search space, since every state in the \brpswc{} search space represents a possible batch repair action. Thus, in \brpswc{} a \emph{state} has a cost -- its expected wasted costs $C_{WC}$ -- but there is not clear definition of the cost of a path in this search space. %, and thus it is not clear what is the cost of reaching $n$ from the start ($g(n)$) or what is the cost of the lowest cost path from $n$ to a goal (which $h(n)$ should estimate). 
+
+
+
+
+
+
+
+For a component $C$, let $c(C)$ be $F(C)\cdot cost(C)$, i.e., the probability that $C$ is faulty times the cost of repairing $C$.  
+Let $CL=\{c_1,\ldots,c_{m_n}\}$ the 
+
+To bound the false positive costs, we define $CL=\{c_1,\ldots,c_{m_n}\}$ as $c(C)$ values for every component $C$, sorted in ascending order, i.e., $c_1$ is the $c(\cdot)$ cost of the component with the lowest $c(\cdot)$ cost in $\comps\setminus\comps[n]$.  The sum $L_{fp}(n)=\sum_{j=1}^i c_i$ is a lower bound  on the false positive costs added to $cost(n)$ by any repair action in $S_i(\gamma)$.
+Formally, 
+\begin{multline}
+\forall n'\in S_i(\comps[n])  : cost_{FP}(\comps[n])+ L_{fp}(n) \\
+\leq cost_{FP}(\comps[n'])
+\label{eq:fp-bound}
+\end{multline}
+
+
+
+
+
+
+
+
+define a second list, denoted $PL=\{p_1,\ldots, p_{m_n}\}$, which is used to estimate how much adding $i$ components will increase the probability the system will be repaired after the next batch repair action. To this end, we denote by $\Omega_{\hat{n}}$ the set of diagnoses that are not equal to or a subset of $\comps[n]$. If either of these diagnoses is correct then the system will not be repaired by the batch repair represented by $n$. We compute for every component $C$ that is not in $\comps[n]$ but is part of a  diagnosis in $\Omega_{\hat{n}}$ the sum of the probabilities of diagnoses in $\Omega_{\hat{n}}$ that contain it, i.e,. 
+\[ p(C)=\sum_{\omega\in \Omega_{\hat{n}}\wedge C\in \omega} p(\omega) \]
+The items in the $PL$ list are the $p(C)$ values for all component not in $\comps[n]$, 
+sorted in descending order. I.e., $p_1$ is the component $C$ with the highest $p(C)$. 
+The importance of the second list is that $U_{\sysrep{}}(n)=min(1, \sum_{j=1}^i p_i)$ is an upper bound on 
+the increase to \sysrep{\comps[n]} that can be achieved by adding $i$ more components 
+to $\comps[n]$. 
+
+\begin{multline}
+\forall n'\in S_i(\comps[n])  : \sysrep{\comps[n]}+\\ U_{\sysrep{}}(n) 
+ \geq  \sysrep{\comps[n']}
+\label{eq:sysrep-bound}
+\end{multline}

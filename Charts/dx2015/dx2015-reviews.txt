@@ -1,0 +1,48 @@
+*******************************************************************
+REVIEWER COMMENTS:
+*******************************************************************
+
+
+This article describes the algorithm of repairing faulty components of a system. The main idea of suggested methodology is to minimise the total repair cost by repairing the faulty components not a one component at a time but batches of components in a single repair action.
+
+
+In my opinion the main disadvantage of this paper is the lack detail description of the repair algorithms. The author only compare the algorithm using two systems, more examples are required to make a conclusions about the advantages of batch repair actions.
+
+
+*General remark:
+** section 2: unclear definition of abnormal component and predicate
+** section 3: The sentence „The term behavior mode of a component refers to a state of the component that affects its behavior“ - hard to understand.
+** section 5: the experimental set up has to be better describe. The authors refer to the paper [11] but for the reader is hard to image how the system looks like, which components do they have, what are the observations etc.
+** In my opinion the authors has to give more details about the described repair algorithms in subsection 5.1
+
+
+* Conclusions:
+** Which limitations have the batch algorithms? Which assumptions do we need to use it? Can I apply the batch repair algorithms to fix any system? Will they always be better then the repair algorithms that do not consider batch repair actions?
+
+
+********************************
+
+
+This paper describes how to express the problem of deciding which components to repair in a faulty system as a combinatorial optimization problem, and experiments with several utility functions for efficiency. The paper describes a new formal expression of a problem that is relevant for the conference topic. The problem of planning repairs for a faulty system is expressed as a combinatorial optimization problem, which makes it more tractable than a previous approach based on planning under uncertainty. The modeling hypotheses offer debate opportunities, in particular the formula from definition 2 : the overhead could vary according to the set of repaired components, or sometimes replacing strictly more components does not cost strictly more (if repairing a components is done by replacing a set of components). Also, could this approach be extended to faults expressed as quality degradation ? With system wear, some quality indicators deviate, and incur additional operational costs, to be weighed against the cost of stopping the system and repairing it. Could this approach be extended to faults with magnitude instead of just boolean faults ? 
+The relationship to existing work is satisfying, especially previous work form the same author. References and comparison to the following pieces of literature could improve the paper : - A diagnosis approach that associates probabilities to diagnoses (possible integration) : Mengshoel, O. J., Chavira, M., Cascio, K., Poll, S., Darwiche, A., & Uckun, S. (2010). Probabilistic model-based diagnosis: An electrical power system case study. Systems, Man and Cybernetics, Part A: Systems and Humans, IEEE Transactions on, 40(5), 874-885. - Work on Self-Healability (that also considers repairing sets of components) : Cordier, M. O., Pencolé, Y., Travé-Massuyès, L., & Vidal, T. (2008, June). Characterizing and checking self-healability. In ECAI (Vol. 8, pp. 789-790). - Work on active diagnosis : Chanthery, E., & Pencolé, Y. (2009, June). Monitoring and active diagnosis for discrete-event systems. In 7th IFAC symposium on fault detection, supervision and safety of technical systems (pp. 1545-1550). The mastery of combinatorial optimization tools is an important strength in this paper. However, the citations provided are very general, no particular tool is mentioned although experiments are run. Which tool was used ? Was it an existing open source tool with custom utility functions, or a completely custom unpublished tool ? In the latter case, has this custom tool been used in other projects ? The experiment section is another strength of this paper. Typo in formula (1) page 2 : uppercase C should be lowercase c. Typo in formula in subsubsection "Estimating the False Positives Cost" page 4 : C_i should be c.
+
+
+********************************
+
+
+This work proposes algorithms for choosing which batch of components to repair in order to minimize the cost of overall repair cost. The article is very clear and easy to read. It presents an idea that seems new and original, that consists in batch repair action.
+
+
+The repair actions are separated into two types of actions. The first one is the component repair cost that consists in repairing a component, the second one is the repair overhead that is the cost of preparing the system to perform the repair actions, and the cost of testing the system after the repair action. The authors consider that the repair overhead is not negligible and so it is more efficient to repair a batch of components. Could you give some real example of these type of systems?
+
+
+The article proposes a range of heuristic objective functions, their effectiveness are experiment on a standard benchmark.  Could you prove the effectiveness of your proposed heuristics theoretically? This article seems to be a collection of ideas for heuristics, and even if they are tested on some benchmarks, no theoretical proof of their effectiveness is given. However, experimental results show that batch repair is a good solution under the hypotheses that have been taken. However for me you should make an effort on the study of the complexity of your algorithm and its theoretical effectiveness. Your conclusion should really mention what are your plans for future work.
+
+
+The repair action is supposed to be deterministic: after a repair action, the considered component is always repaired (it is normal). Is this hypothesis difficult to overcome? It implies to take into account another probability, but for me it does not change the idea of the combinatorial problem. Why is it important that the cost_c >0 for every component? For example for a lot of systems a simple reboot is a repair action that can succeed. This implies that these types of systems are not considered because the reboot may fail and has no cost. It seems to me that at least zero cost action repair is possible (even if it is obvious that this action will be always chosen by the plan).
+
+
+Concerning the likelihood that a component is faulty, Gaudel and al (PHM 2014, DX 2014) propose a way to compute this information with a particle filter. Is it possible to combine this solution with your solution?
+
+
+Detail : In equation (1), I think that C should not be in capita
